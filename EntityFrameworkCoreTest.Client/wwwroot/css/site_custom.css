@@ -1,0 +1,57 @@
+﻿.loading-unfocus > :not(.loading-overlay) {
+    filter: blur(3px) grayscale(100%);
+    opacity: 0.6
+}
+
+.overlay-wrapper {
+    position: relative;
+    
+}
+
+.loading-overlay {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+    .loading-overlay div {
+        position: absolute;
+        width: auto;
+        height: auto;
+        max-width: 100px;
+        max-height: 100px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+    }
+
+    .hidden {
+        display:none;
+    }
+
+table .employee-details {
+    
+}
+
+.employee-details th {
+    font-size: 0.7em;
+    line-height: 1em;
+    color: deepskyblue;
+    border: 0;
+    padding: 0;
+    vertical-align: bottom;
+}
+
+.employee-details td {
+    font-size: 1em;
+    color: black;
+    border: 0;
+    padding: 0 10px;
+    vertical-align: bottom;
+}
+

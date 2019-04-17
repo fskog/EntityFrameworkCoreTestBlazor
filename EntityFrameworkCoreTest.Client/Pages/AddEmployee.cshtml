@@ -1,0 +1,55 @@
+﻿@page "/addemployee"
+
+@using EntityFrameworkCoreTest.Shared;
+@using Microsoft.AspNetCore.Components.Forms;
+
+
+<h1>New employee</h1>
+
+<EditForm Model="@employee" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p class="name">
+        First name: <InputText bind-Value="@employee.FirstName" />
+    </p>
+    <p class="name">
+        Last name: <InputText bind-Value="@employee.LastName" />
+    </p>
+    <p class="name">
+        Date of birth: <InputDate bind-Value="@employee.DateOfBirth" />
+    </p>
+    <p class="name">
+        Phone number: <InputText bind-Value="@employee.PhoneNumber" />
+    </p>
+    <p class="name">
+        Email: <InputText bind-Value="@employee.Email" />
+    </p>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+<p class="alert alert-info">@resultText</p>
+
+
+@inject System.Net.Http.HttpClient Http
+@functions {
+
+    [Parameter] protected Action submitComplete { get; set; }
+    Employee employee = new Employee();
+    string resultText = "No result yet...";
+    async void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+        resultText = "Awaiting result...";
+        resultText = await CreateEmployee();
+        Console.WriteLine("Submit complete.");
+        submitComplete?.Invoke();
+    }
+
+
+    protected async Task<string> CreateEmployee()
+    {
+        Console.WriteLine($"CreateEmployee {employee.FirstName} {employee.LastName}");
+        var result = await Http.PostJsonAsync<Employee>("api/Employees", employee);
+        return result.ToString();
+    }
+}

@@ -1,0 +1,91 @@
+﻿@page "/employeedetails"
+
+@using EntityFrameworkCoreTest.Shared;
+@using Microsoft.AspNetCore.Components.Forms;
+
+
+<h1>Employee details</h1>
+
+<EditForm Model="@inputEmployee" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputNumber bind-Value="@inputEmployee.EmployeeId" />
+    <button class="btn btn-primary"><i class="@(isLoading ? loadingEmployeesClass : "")"></i>Get employee details</button>
+</EditForm>
+
+
+<div class="overlay-wrapper @(isLoading ? "loading-unfocus" : "")" style="margin-top: 20px;">
+
+    @if (employee != null)
+    {
+        <img src="/css/icons/boss.svg" height="100" width="100" />
+        <table class="table employee-details" border="0">
+            <tbody>
+                <tr>
+                    <th>Employee id</th>
+
+                    <td>@employee.EmployeeId</td>
+                </tr>
+                <tr>
+                    <th>First name</th>
+
+                    <td>@employee.FirstName</td>
+                </tr>
+                <tr>
+                    <th>Last name</th>
+
+                    <td>@employee.LastName</td>
+                </tr>
+                <tr>
+                    <th>Birthday</th>
+
+                    <td>@employee.DateOfBirth</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+
+                    <td>@employee.Email</td>
+                </tr>
+                <tr>
+                    <th>Phone</th>
+
+                    <td>@employee.PhoneNumber</td>
+                </tr>
+            </tbody>
+        </table>
+            }
+        
+        <div class="@(isLoading ? "loading-overlay" : "hidden")"><div><i class="fa fa-spinner fa-spin fa-10x"></i></div></div>
+    </div>
+
+@inject System.Net.Http.HttpClient Http
+@functions {
+    string searchId = "";
+    Employee inputEmployee = new Employee();
+    Employee employee;
+    string loadingEmployeesClass = "fa fa-spinner fa-spin";
+    bool isLoading = false;
+
+    async void HandleValidSubmit()
+    {
+        await GetEmployee();
+    }
+
+    private async Task GetEmployee()
+    {
+        isLoading = true;
+        this.StateHasChanged();
+        await Task.Delay(3000);
+        try
+        {
+            employee = await Http.GetJsonAsync<Employee>($"api/Employees/{inputEmployee.EmployeeId}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error when fetching employee with id {inputEmployee.EmployeeId}");
+        }
+        isLoading = false;
+        this.StateHasChanged();
+    }
+}

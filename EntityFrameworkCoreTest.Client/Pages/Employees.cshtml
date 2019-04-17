@@ -1,0 +1,88 @@
+﻿@page "/employees"
+
+@using EntityFrameworkCoreTest.Shared;
+
+
+
+<h1>Employees</h1>
+
+<button class="btn btn-primary" onclick="@RefreshEmployeeList"><i class="@(isLoading ? loadingEmployeesClass : "")"></i>Refresh</button>
+@if (showAddEmployee)
+{
+    <p class="alert alert-info">
+        <AddEmployee submitComplete="@newEmployeeSubmitted" />
+    </p>
+}
+else
+{
+    <button class="btn btn-primary" onclick="@(() => showAddEmployee = true)">New employee</button>
+}
+
+<div class="overlay-wrapper @(isLoading ? "loading-unfocus" : "")">
+    <table class="table ">
+        <thead>
+            <tr>
+                <th>Employee id</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Birthday</th>
+                <th>Email</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in employees)
+            {
+                <tr>
+                    <td>@employee.EmployeeId</td>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.DateOfBirth</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.PhoneNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="@(isLoading ? "loading-overlay" : "hidden")"><div><i class="fa fa-spinner fa-spin fa-10x"></i></div></div>
+</div>
+
+@inject System.Net.Http.HttpClient Http
+@functions {
+    bool showAddEmployee = false;
+    List<Employee> employees = new List<Employee>();
+    string loadingEmployeesClass = "fa fa-spinner fa-spin";
+    bool isLoading = false;
+    protected override async Task OnInitAsync()
+    {
+        await GetEmplyeeList();
+    }
+
+    private async Task GetEmplyeeList()
+    {
+        isLoading = true;
+        this.StateHasChanged();
+        await Task.Delay(3000);
+        employees = await Http.GetJsonAsync<List<Employee>>("api/Employees");
+        isLoading = false;
+        this.StateHasChanged();
+    }
+
+    private async void newEmployeeSubmitted()
+    {
+        Console.WriteLine("AddEmployee notified submit complete.");
+        showAddEmployee = false;
+        await GetEmplyeeList();
+        this.StateHasChanged();
+    }
+
+    private async void RefreshEmployeeList()
+    {
+
+
+        await GetEmplyeeList();
+
+
+    }
+
+}
